@@ -1,0 +1,14 @@
+{
+  "name": "brislaw",
+  "description": "BrisLaw: Texas case law tools for Claude Code, shared for testing.",
+  "owner": {
+    "name": "Austin Brister"
+  },
+  "plugins": [
+    {
+      "name": "brislaw",
+      "source": "./plugin",
+      "description": "Texas case law from CourtListener: search, pull opinions with page markers, find citing cases, cite-check drafts, and find pin cites for unreported cases."
+    }
+  ]
+}

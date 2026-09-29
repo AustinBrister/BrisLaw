@@ -1,0 +1,7 @@
+{
+  "name": "brislaw",
+  "description": "Texas case law from CourtListener: search, pull opinions with page markers, find citing cases, cite-check drafts, and find pin cites for unreported cases.",
+  "author": {
+    "name": "Austin Brister"
+  }
+}
