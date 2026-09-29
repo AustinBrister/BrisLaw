@@ -15,27 +15,13 @@ This is a test version shared by Austin Brister. Please send him anything that b
 
 BrisLaw is not a citator. It does not tell you whether a case was followed or criticized. Check anything you will file on Lexis or Westlaw.
 
-## Install (about 15 minutes, once)
+## Install (about 10 minutes, once)
 
-You need Claude Code, either the Claude desktop app's Code tab or the command-line version. On Windows, Claude Code also needs Git for Windows (https://git-scm.com/downloads/win), which you may already have.
+You need Claude Code, either the Claude desktop app's Code tab or the command-line version, and git. On Windows, install Git for Windows (https://git-scm.com/downloads/win) if you don't have it; Claude Code uses it too. On a Mac, git is usually already there; if not, the first git command offers to install Apple's developer tools.
 
 Commands below go in **Terminal** on a Mac, or **PowerShell** on Windows.
 
-### 1. Accept the GitHub invitation
-
-Austin invites you to the private BrisLaw repository on GitHub. Accept the emailed invitation; you need a free GitHub account.
-
-### 2. Let your computer sign in to GitHub
-
-Install the GitHub CLI from https://cli.github.com (Mac and Windows installers are on that page). Then run:
-
-```
-gh auth login
-```
-
-Choose **GitHub.com**, then **HTTPS**, answer **Yes** when it asks to authenticate Git with your GitHub credentials, and sign in with your web browser. This lets your computer download the private repository.
-
-### 3. Install uv
+### 1. Install uv
 
 uv installs BrisLaw's program and, if needed, the version of Python it runs on. You do not need to install Python yourself.
 
@@ -53,7 +39,7 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 Close the Terminal or PowerShell window and open a new one.
 
-### 4. Install the BrisLaw program
+### 2. Install the BrisLaw program
 
 ```
 uv tool install git+https://github.com/AustinBrister/BrisLaw
@@ -65,7 +51,7 @@ Check it worked:
 brislaw --version
 ```
 
-### 5. Connect your CourtListener account
+### 3. Connect your CourtListener account
 
 Run:
 
@@ -79,7 +65,7 @@ If you skip this step, Claude notices the first time you use BrisLaw and walks y
 
 Do not paste the token into a chat with Claude.
 
-### 6. Add BrisLaw to Claude Code
+### 4. Add BrisLaw to Claude Code
 
 In Claude Code, type these two commands one at a time:
 
@@ -97,7 +83,7 @@ claude plugin install brislaw@brislaw
 
 Then restart Claude Code.
 
-### 7. Try it
+### 5. Try it
 
 Ask Claude things like:
 
@@ -136,7 +122,7 @@ BrisLaw sends your searches, case identifiers, and citation strings to CourtList
 
 ## If something goes wrong
 
-- **`brislaw: command not found`**: close and reopen Terminal or PowerShell after step 3, then repeat step 4.
-- **Authentication failed or not configured**: repeat step 5.
-- **The plugin will not install, or the install step asks for a password**: repeat step 2, then try again.
+- **`brislaw: command not found`**: close and reopen Terminal or PowerShell after step 1, then repeat step 2.
+- **Authentication failed or not configured**: repeat step 3.
+- **The program or plugin will not install**: check that `git --version` works in Terminal or PowerShell, then try again.
 - **Anything else**: send Austin the exact message you saw.
