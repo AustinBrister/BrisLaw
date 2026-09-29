@@ -67,13 +67,15 @@ brislaw --version
 
 ### 5. Connect your CourtListener account
 
-Create a free account at https://www.courtlistener.com, then copy your API token from https://www.courtlistener.com/profile/api-token/. Run:
+Run:
 
 ```
 brislaw auth login
 ```
 
-and paste the token when asked. The token is not shown as you paste it. It is stored in your Mac Keychain or Windows Credential Manager. Each person uses their own token, with its own limit of 5,000 requests an hour.
+It opens CourtListener's token page in your browser. Sign in, or create a free account there and confirm your email. Copy the API token on that page, then paste it into the Terminal or PowerShell window. The token is not shown as you paste it. BrisLaw checks the token with CourtListener and saves it in your Mac Keychain or Windows Credential Manager.
+
+If you skip this step, Claude notices the first time you use BrisLaw and walks you through it. Each person uses their own token, with its own limit of 5,000 requests an hour.
 
 Do not paste the token into a chat with Claude.
 

@@ -21,7 +21,11 @@ Cite-checking a draft (`brislaw check`) and finding pin cites for cases without 
 
 All reference paths are relative to this skill's own folder, the base directory shown when the skill loads (inside the Claude Code plugin cache). Read them with the Read tool.
 
-**Before the first command in a session,** confirm the `brislaw` program is installed by running `brislaw --version`. If the command is not found, stop and tell the user that BrisLaw's command-line program is not installed yet, and point them to the install steps in the BrisLaw README (https://github.com/AustinBrister/BrisLaw). If a command fails with an authentication error, read `references/auth.md`.
+**Before the first command in a session, check setup:**
+
+1. Run `brislaw --version`. If the command is not found, stop and tell the user that BrisLaw's program is not installed yet, and point them to the install steps in the BrisLaw README (https://github.com/AustinBrister/BrisLaw).
+2. Run `brislaw auth status --json`. If `data.configured` is false, the user has not connected CourtListener yet. Walk them through it with `references/auth.md` before doing anything else. In short: the user runs `brislaw auth login` in a terminal; it opens CourtListener's token page in their browser, they copy the token, paste it into the terminal, and BrisLaw checks it with CourtListener before saving it. If you can start a command in the user's own terminal (for example, the terminal panel in the Claude desktop app), start `brislaw auth login` there and tell the user to paste the token into that terminal. Otherwise ask them to open Terminal (Mac) or PowerShell (Windows) and run it. **Never ask for the token in the chat, and never type it for them.**
+3. If a later command fails with an authentication error, read `references/auth.md`.
 
 **Windows:** the commands in this file work the same in Git Bash and PowerShell. Put file paths that contain spaces in double quotes.
 

@@ -1707,33 +1707,91 @@ app.add_typer(auth_app, name="auth")
 
 
 @auth_app.command("login")
-def auth_login() -> None:
-    """Store your CourtListener API token in macOS Keychain."""
-    token = typer.prompt("CourtListener API token", hide_input=True)
-    if not token.strip():
+def auth_login(
+    no_browser: bool = typer.Option(
+        False, "--no-browser", help="Print the token page address instead of opening it"
+    ),
+) -> None:
+    """Connect your CourtListener account: opens the token page, then asks you to paste the token.
+
+    The token is saved in the Mac Keychain or the Windows Credential Manager.
+    Run this in your own terminal; never paste the token into a chat.
+    """
+    import webbrowser
+
+    from brislaw.auth import TOKEN_PAGE, check_api_token
+
+    console.print(
+        "\n  [bold]Connect brislaw to your CourtListener account[/bold]\n\n"
+        "  1. Sign in to CourtListener (or create a free account and confirm your email).\n"
+        "  2. Copy the API token shown on the token page.\n"
+        "  3. Paste it below. It will not be shown as you paste.\n"
+    )
+    opened = False
+    if not no_browser:
+        try:
+            opened = webbrowser.open(TOKEN_PAGE)
+        except Exception:
+            opened = False
+    if opened:
+        console.print(f"  Opened the token page in your browser: {TOKEN_PAGE}\n")
+    else:
+        console.print(f"  Open this page in your browser: {TOKEN_PAGE}\n")
+
+    token = typer.prompt("CourtListener API token", hide_input=True).strip()
+    if not token:
         err_console.print("[red]Error:[/red] Token cannot be empty.")
         raise typer.Exit(code=1)
-    set_api_token(token.strip())
-    console.print("[green]API token stored in macOS Keychain.[/green]")
+
+    valid = check_api_token(token)
+    if valid is False:
+        err_console.print(
+            "[red]CourtListener rejected that token.[/red] Copy it again from "
+            f"{TOKEN_PAGE} and rerun [bold]brislaw auth login[/bold]."
+        )
+        raise typer.Exit(code=1)
+
+    set_api_token(token)
+    if valid is None:
+        console.print(
+            "[green]Token saved.[/green] CourtListener could not be reached to confirm it; "
+            "if searches fail with an authentication error, run this again."
+        )
+    else:
+        console.print("[green]Token saved and confirmed with CourtListener. brislaw is ready.[/green]")
 
 
 @auth_app.command("status")
-def auth_status() -> None:
-    """Check whether an API token is configured."""
-    token = get_api_token()
+def auth_status(
+    json_mode: bool = typer.Option(False, "--json", help="Output structured JSON"),
+) -> None:
+    """Check whether a CourtListener API token is configured."""
+    from brislaw.auth import TOKEN_PAGE, find_api_token
+
+    token, source = find_api_token()
+    if json_mode:
+        emit_json(
+            {
+                "configured": bool(token),
+                "source": source,
+                "setup_command": "brislaw auth login",
+                "token_page": TOKEN_PAGE,
+            }
+        )
+        return
     if token:
-        prefix = token[:8] + "..."
-        console.print(f"[green]Configured[/green]  Token: {prefix}")
+        where = "Keychain or Credential Manager" if source == "keychain" else "COURTLISTENER_API_TOKEN variable"
+        console.print(f"[green]Configured[/green]  (from the {where}; ends in ...{token[-4:]})")
     else:
         console.print(
             "[yellow]Not configured[/yellow]  "
-            "Run [bold]brislaw auth login[/bold] to set up."
+            "Run [bold]brislaw auth login[/bold] in a terminal to set up."
         )
 
 
 @auth_app.command("logout")
 def auth_logout() -> None:
-    """Remove the stored API token from macOS Keychain."""
+    """Remove the stored API token from the Keychain or Credential Manager."""
     delete_api_token()
     console.print("[green]API token removed.[/green]")
 
