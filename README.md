@@ -1,4 +1,9 @@
-# BrisLaw
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brislaw-wordmark-dark.png">
+    <img alt="BrisLaw: Texas case law, inside Claude" src="assets/brislaw-wordmark-light.png" width="420">
+  </picture>
+</p>
 
 BrisLaw adds Texas case law research to Claude Code. It uses CourtListener, the free case law database run by the Free Law Project. Once it's installed, you ask Claude in plain English and Claude runs BrisLaw for you.
 
@@ -126,3 +131,7 @@ BrisLaw sends your searches, case identifiers, and citation strings to CourtList
 - **Authentication failed or not configured**: repeat step 3.
 - **The program or plugin will not install**: check that `git --version` works in Terminal or PowerShell, then try again.
 - **Anything else**: send Austin the exact message you saw.
+
+## Credits
+
+BrisLaw is built on CourtListener's database and API, from the Free Law Project (https://free.law). It is an independent project, not affiliated with or endorsed by the Free Law Project. The wordmark uses Libre Baskerville and Source Sans 3, both under the SIL Open Font License.

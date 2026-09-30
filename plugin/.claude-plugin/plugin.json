@@ -1,7 +1,16 @@
 {
   "name": "brislaw",
-  "description": "Texas case law from CourtListener: search, pull opinions with page markers, find citing cases, cite-check drafts, and find pin cites for unreported cases.",
+  "description": "Texas case law, inside Claude. Search Texas opinions on CourtListener, pull them with page markers, find citing cases, cite-check drafts, and find pin cites for unreported cases.",
   "author": {
     "name": "Austin Brister"
-  }
+  },
+  "homepage": "https://github.com/AustinBrister/BrisLaw",
+  "repository": "https://github.com/AustinBrister/BrisLaw",
+  "keywords": [
+    "legal",
+    "case law",
+    "Texas",
+    "CourtListener",
+    "citations"
+  ]
 }

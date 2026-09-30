@@ -28,6 +28,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
+from brislaw.display import signature, today_long
+
 # CourtListener checks at most 60 citations a minute.
 CHUNK_SIZE = 60
 THROTTLE_SECONDS = 61
@@ -87,8 +89,7 @@ class DraftCitation:
 
 def _today() -> str:
     """'September 29, 2026' (strftime's %-d does not work on Windows)."""
-    now = datetime.now()
-    return f"{now:%B} {now.day}, {now.year}"
+    return today_long()
 
 
 _W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
@@ -564,6 +565,10 @@ def render_markdown(source: Path, cites: dict[str, DraftCitation], short_issues:
         "parentheticals, or subsequent history. Only citation strings were sent to "
         "CourtListener, not the text of the draft."
     )
+    out.append("")
+    out.append("---")
+    out.append("")
+    out.append(f"*{signature('Checked')}*")
     out.append("")
     return "\n".join(out)
 

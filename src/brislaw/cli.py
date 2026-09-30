@@ -85,7 +85,9 @@ class FreeLawGroup(typer.core.TyperGroup):
 
 def _version_callback(value: bool) -> None:
     if value:
-        console.print(f"brislaw {__version__}")
+        from brislaw import BRAND, TAGLINE
+
+        console.print(f"{BRAND} {__version__} \u00b7 {TAGLINE}")
         raise typer.Exit()
 
 
@@ -94,14 +96,15 @@ def _version_callback(value: bool) -> None:
 app = typer.Typer(
     name="brislaw",
     help="Search and retrieve Texas case law from CourtListener.",
-    no_args_is_help=True,
+    no_args_is_help=False,
     rich_markup_mode="rich",
     cls=FreeLawGroup,
 )
 
 
-@app.callback()
+@app.callback(invoke_without_command=True)
 def main(
+    ctx: typer.Context,
     version: bool = typer.Option(
         False,
         "--version",
@@ -112,6 +115,12 @@ def main(
     ),
 ) -> None:
     """Search and retrieve Texas case law from CourtListener."""
+    if ctx.invoked_subcommand is None:
+        from brislaw.auth import find_api_token
+        from brislaw.display import display_welcome
+
+        display_welcome(connected=bool(find_api_token()[0]))
+        raise typer.Exit()
     # eyecite logs parser diagnostics ("Unknown overlap case...") to stderr,
     # which lands in the middle of JSON output in some shells.
     import logging
@@ -1579,6 +1588,7 @@ def pins(
     out.append("")
     if not hits:
         out.append("No pin cites found.")
+        out.append("")
     current = None
     for h in hits:
         heading = f"{h['cite']}, at {h['pin']}" if h["pin"].startswith("*") else f"{h['cite']} at {h['pin']}"
@@ -1591,6 +1601,12 @@ def pins(
             f"cluster:{h['citing_cluster_id']}): \"{' '.join(h['context'].split())}\""
         )
         out.append("")
+    from brislaw.display import signature
+
+    out.append("---")
+    out.append("")
+    out.append(f"*{signature('Compiled')}*")
+    out.append("")
     report = "\n".join(out)
     if output_file is not None:
         output_file.parent.mkdir(parents=True, exist_ok=True)
@@ -1721,8 +1737,10 @@ def auth_login(
 
     from brislaw.auth import TOKEN_PAGE, check_api_token
 
+    from brislaw.display import brand_chip
+
     console.print(
-        "\n  [bold]Connect brislaw to your CourtListener account[/bold]\n\n"
+        f"\n  {brand_chip()}  [bold]Connect to your CourtListener account[/bold]\n\n"
         "  1. Sign in to CourtListener (or create a free account and confirm your email).\n"
         "  2. Copy the API token shown on the token page.\n"
         "  3. Paste it below. It will not be shown as you paste.\n"

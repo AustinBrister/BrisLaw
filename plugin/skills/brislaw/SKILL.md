@@ -48,6 +48,15 @@ This skill is invoked when the user says `/brislaw $ARGUMENTS` or asks to search
 
 **The user's raw input is:** `$ARGUMENTS`
 
+## How BrisLaw answers look
+
+BrisLaw should read like a finished product: the same shape every time, quiet, no decoration.
+
+- **Open every BrisLaw result with one header line:** `**BrisLaw** · ` followed by what the result is, in a few words. Examples: `**BrisLaw** · 12 Texas cases on post-production costs · newest first`; `**BrisLaw** · 121 cases cite Hooks v. Samson Lone Star, 457 S.W.3d 52 · most discussed first`; `**BrisLaw** · Citation check of Brief.docx: 2 problems, 1 not in CourtListener, 16 checked out`; `**BrisLaw** · Pin cites to Ho v. MacArthur Ranch, No. 05-14-00741-CV`; `**BrisLaw** · Saved Cactus Water Servs. v. COG Operating (Tex. 2025)`.
+- **Close with one line of next steps** in italics, separated by middle dots, offering only what makes sense next. Example: `*Next:* pull any case · show citing cases · cite-check a draft`.
+- Use the brand name only in that header. No emoji, no banners, no repeated slogans. Setup messages and warnings are plain sentences.
+- Everything between the header and the closing line follows the formats below.
+
 ## Intent Parsing
 
 Parse `$ARGUMENTS` to determine what the user wants. Before these rules, send phrase searches inside specific opinions ("does Hooks say X anywhere", "find where these cases discuss Y") to the CourtListener connector, per the section above. Otherwise apply these rules in order:
@@ -193,29 +202,28 @@ If `status` is `"error"`, handle per Error Handling below. Otherwise extract `da
 
 ### Step 4: Present Results
 
-Always start with a conversational intro ("Found N Texas cases on [topic]...").
+Start with the BrisLaw header line (see "How BrisLaw answers look"), naming the count, the topic, and the sort order.
 
 **Detailed format (1-3 results):** For each result: full formal citation, court, date, published status, cite count, and a 2-3 sentence relevance note written from the snippet.
 
 **Compact format (4-10 results):** One line per result: short case name + court + year + one-line relevance note.
 
 ```
-Found 19,475 results for "estoppel" across Texas courts. Showing top 10:
+**BrisLaw** · 19,475 Texas results for "estoppel" · top 10 by relevance
 
-1. Pryor Legacy v. Ranches at Overhills, Tex. App. (2025): Estoppel defense in property dispute
-2. Hensley v. SCJC, Tex. App. (2025): Estoppel plea granted then reversed
+1. Pryor Legacy v. Ranches at Overhills, Tex. App. (2025): [one-line note written from the snippet]
+2. Hensley v. SCJC, Tex. App. (2025): [one-line note written from the snippet]
 ...
 ```
 
+The notes come from the search snippets. Do not state what a case holds unless you have read the opinion in this session.
+
 **Citation format:** `Case Name, Volume Reporter Page (Court Year)`. When the `citation` field is empty, fall back to court + docket number + date: `Tex. App., No. 04-24-00380-CV (Sept. 24, 2025)`. This mirrors how lawyers cite unpublished opinions.
 
-**Always end with this escalation prompt** (every time, not conditional):
+**Always end with the next-steps line** (every time):
 
 ```
-Retrieve any case with "get N" or by name. I can also:
-- **Summarize** the top cases for relevance to your query
-- **Save** any case to your knowledge base
-- **Dig deeper** with additional search angles
+*Next:* pull any case by number or name · summarize the top cases · save a case · search from another angle
 ```
 
 ## Get Workflow (Retrieval)
@@ -343,13 +351,10 @@ Same envelope as search (`status`, `data.results`), plus `data.citing_cases_all_
 - CourtListener's citation table is not a citator. It does not say whether a citing case followed, distinguished, or criticized the case. Read the high-depth cases to find out, and check Lexis or Westlaw for high-stakes reliance
 - Zero citing results does NOT necessarily mean nothing cites the opinion, especially for recent cases
 
-End with:
+Start with the BrisLaw header line (count, case, sort order) and end with:
 
 ```
-Retrieve any citing case with "get N" or by name. I can also:
-- **Summarize** the citing cases for relevance
-- **Save** any opinion to your knowledge base
-- **Search** for the cited case itself to review its holding
+*Next:* pull any citing case · summarize the most-discussed ones · check a different case
 ```
 
 ### Citing in Research Workflows

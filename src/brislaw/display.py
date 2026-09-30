@@ -523,6 +523,68 @@ def display_cache_status(was_cached: bool) -> None:
 # ---------------------------------------------------------------------------
 
 
+def today_long() -> str:
+    """'September 29, 2026' (strftime's %-d does not work on Windows)."""
+    from datetime import datetime
+
+    now = datetime.now()
+    return f"{now:%B} {now.day}, {now.year}"
+
+
+def signature(action: str, source_url: str | None = None) -> str:
+    """One-line signature for generated files.
+
+    'Prepared with BrisLaw · Source: CourtListener (URL) · Retrieved September 29, 2026'.
+    Keeps the phrase "Source: CourtListener", which other workflows search for.
+    """
+    from brislaw import BRAND
+
+    source = f"Source: CourtListener ({source_url})" if source_url else "Source: CourtListener"
+    return f"Prepared with {BRAND} \u00b7 {source} \u00b7 {action} {today_long()}"
+
+
+def brand_chip() -> str:
+    """Rich markup for the brand name as white text on the brand color."""
+    from brislaw import BRAND, BRAND_COLOR
+
+    return f"[bold white on {BRAND_COLOR}] {BRAND} [/]"
+
+
+def display_welcome(connected: bool) -> None:
+    """Welcome screen shown when the program runs with no command."""
+    from brislaw import BRAND, TAGLINE, __version__, BRAND_COLOR
+
+    cmd = BRAND.lower()
+    status = (
+        "[green]connected[/green]" if connected
+        else f"[yellow]not connected[/yellow] [dim](run {cmd} auth login)[/dim]"
+    )
+    rows = [
+        ("search", "find cases"),
+        ("get", "pull an opinion by citation, docket number, or name"),
+        ("citing", "cases that cite a case, most discussed first"),
+        ("check", "cite-check a Word or markdown draft"),
+        ("pins", "pin cites other courts used, for unreported cases"),
+        ("auth login", "connect your CourtListener account"),
+    ]
+    width = max(len(r[0]) for r in rows)
+    lines = [
+        f"[bold]{TAGLINE}[/bold]",
+        f"[dim]Version {__version__}[/dim]  \u00b7  CourtListener: {status}",
+        "",
+    ]
+    lines += [f"  [bold]{name.ljust(width)}[/bold]  {what}" for name, what in rows]
+    lines += ["", f"[dim]In Claude, just ask. In a terminal: {cmd} COMMAND --help[/dim]"]
+    console.print(Panel(
+        "\n".join(lines),
+        title=brand_chip(),
+        title_align="left",
+        border_style=BRAND_COLOR,
+        expand=False,
+        padding=(1, 2),
+    ))
+
+
 def _table_cell(text: str) -> str:
     """Make text safe for one markdown table cell."""
     return " ".join(str(text).split()).replace("|", "\\|")
@@ -713,8 +775,10 @@ def format_opinion_markdown(
         parts.append("---")
         parts.append("")
 
-    # Source attribution
-    parts.append(f"*Source: CourtListener (https://www.courtlistener.com/opinion/{opinion.cluster_id}/)*")
+    # Source attribution and signature
+    parts.append(
+        f"*{signature('Retrieved', f'https://www.courtlistener.com/opinion/{opinion.cluster_id}/')}*"
+    )
     parts.append("")
 
     # Footnotes at the bottom
